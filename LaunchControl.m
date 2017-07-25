@@ -137,7 +137,7 @@ Eng.Ln_in = ((Eng.de_in-Eng.dt_in)/2) / tand(Eng.alpn); % Cone nozzle length [in
 tend = 90; % End time of sim in seconds
 
 tic % Record sim computation time
-    simOut = sim('LRSim1D_V3');
+    simOut = sim('LR_Traject_Sim.slx');
     Flight.max.alt = max(flightdata(:,3))*m2f; % [ft]
     Flight.max.mach = max(flightdata(:,4)); % V/a
     Flight.max.accel = max(flightdata(:,1))/g; % [g]
