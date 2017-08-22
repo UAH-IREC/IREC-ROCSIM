@@ -12,7 +12,7 @@ in2m = 0.0254; % convert in to m
 
 %% Determine Tc for various Engine params
 
-Tamb = 300; % Ambient Temperature [K] (305K is 90F)
+Tamb = 300; % Ambient Temperature [K] (305K is ~75F)
 
 % Propellant Selection & Properties
 Prop.ox.name = {'NITROUSOXIDE','N2O'}; % Nitrous Oxide
@@ -48,8 +48,19 @@ Eng.cstar_th(i,j,k) = (g*Eng.Isp_vac(i,j,k))/Eng.Cfvac(i,j,k); % Theoretical C* 
         end
     end
 end
+Eng.Tc = Eng.Tc.*1.8 - 459; % Converts K to F
 
 figure(1)
-plot(Eng.MR(:), Eng.Tc(:,2))
+plot(Eng.MR(:), Eng.Tc(:,1),Eng.MR(:), Eng.Tc(:,2),Eng.MR(:), Eng.Tc(:,3))
+title('NOx/Ethane O/F vs. Temperature')
+xlabel('O/F')
+ylabel('Temperature [F]')
+legend('Pc 200 psia','Pc 300 psia','Pc 400 psia','Location','northwest')
+grid on
 figure(2)
-plot(Eng.MR(:), Eng.Isp_vac(:,2))
+plot(Eng.MR(:), Eng.Isp_vac(:,1),Eng.MR(:), Eng.Isp_vac(:,2),Eng.MR(:), Eng.Isp_vac(:,3))
+title('NOx/Ethane O/F vs. Vacuum Isp')
+xlabel('O/F')
+ylabel('Isp [s]')
+legend('Pc 200 psia','Pc 300 psia','Pc 400 psia','Location','northeast')
+grid on
