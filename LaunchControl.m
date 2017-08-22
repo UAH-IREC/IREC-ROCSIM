@@ -39,8 +39,7 @@ Eng.cstar_eta = 0.9; % C* Efficiency
 
 % Derived Engine Performance Values
 [data] = CEA_Rocket(char(Prop.ox.name(2)),char(Prop.f.name(2)),Eng.pct_psi,Eng.MR,Eng.eps,Tamb,Tamb);
-Eng.Tc = double(data.Temperature(3)); % Chamber Temperature (try to keep it low)
-Eng.gam = data.gam(2); % gamma at throat
+Eng.Tc = double(data.Temperature(1)); % Chamber Temperature (try to keep it low)
 Eng.Cfvac = data.cf(3); % Exit thrust coefficient, vacuum
 Eng.Isp_vac = double(data.isp(3)); % Vacuum Isp [s]
 Eng.cstar_th = (g*Eng.Isp_vac)/Eng.Cfvac; % Theoretical C* [m/s]
@@ -121,7 +120,7 @@ Eng.Imp_lb = Eng.thrustGL_lb*Eng.tburn; % Calculated impulse [lb-s]
 Eng.Isp = Eng.thrustGL / (g*Eng.mdot); % Specific Impulse [s]
 
 % Non Sim Parameters
-Eng.Lstar = 1.5; % Characteristic chamber length [m]
+Eng.Lstar = 45*in2m; % Characteristic chamber length [m]
 Eng.Vc = Eng.Lstar*Eng.At;
 Eng.Vc_in3 = Eng.Vc / in2m^3;
 Eng.epsc = 7; % Chamber contraction ratio (From LRE Book p. 73)
