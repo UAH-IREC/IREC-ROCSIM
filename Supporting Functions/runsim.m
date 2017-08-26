@@ -166,8 +166,6 @@ if ~isfield(Roc, 'minert')
     mmarg = 0.15; % Mass margin %
     Roc.minert = (Roc.tank.m + Roc.air.m + Eng.m + Roc.tank.mvalves + ...
         Roc.tank.mline + Roc.mpay) * (1+mmarg); % Inert mass of rocket[kg]
-else
-    Roc.minert = Roc.minert + Eng.m;
 end
     
 % Wet Mass and More Derived Performance
