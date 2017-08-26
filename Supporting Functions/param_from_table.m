@@ -1,6 +1,7 @@
 function [value, valtype] = param_from_table(T, param_name, param_col)
-%UNTITLED5 Summary of this function goes here
-%   Detailed explanation goes here
+% Reads in a parameter from a MATLAB table
+%   Searches the given column for a cell named param_name in the table T
+%   See simconfig.xlsx for example of format
 valtype = [];
 value = [];
 for i = 1:height(T)
