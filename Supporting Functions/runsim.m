@@ -229,9 +229,9 @@ end
 
 tic % Record sim computation time
     simOut = sim('LR_Traject_Sim.slx', [], options);
-    Flight.max.alt = max(flightdata(:,3))*m2f; % [ft]
-    Flight.max.mach = max(flightdata(:,4)); % V/a
-    Flight.max.accel = max(flightdata(:,1))/g; % [g]
+    Flight.max.alt = max(flightdata(:,4))*m2f; % [ft]
+    Flight.max.mach = max(flightdata(:,5)); % V/a
+    Flight.max.accel = max(flightdata(:,2))/g; % [g]
     Flight.max.Q = max(forces(:,2))*0.2248; % Drag force[lb]
     Flight.max.load = max(forces(:,2)+forces(:,3))*0.2248; % Compressive load [lb]
     max_vals = Flight.max;
