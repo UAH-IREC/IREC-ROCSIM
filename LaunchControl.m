@@ -48,7 +48,7 @@ if type == ParameterType.SingleValue
 end
 
 %% Rocket Options
-rocket_params.garbage = 0;
+rocket_params = [];
 rocketoptions = readtable('simconfig.xlsx', 'Sheet', 'Rocket Parameters');
 [val, type] = param_from_table(rocketoptions, 'Total inert mass', 1);
 if type == ParameterType.SingleValue
@@ -66,7 +66,7 @@ if type == ParameterType.SingleValue
 end
 
 %% Engine Options
-engine_params.garbage = 0;
+engine_params = [];
 engineoptions = readtable('simconfig.xlsx', 'Sheet', 'Engine Parameters');
 [val, type] = param_from_table(engineoptions, 'Chamber pressure', 1);
 if type == ParameterType.SingleValue
