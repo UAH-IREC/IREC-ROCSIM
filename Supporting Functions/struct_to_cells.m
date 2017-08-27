@@ -21,7 +21,7 @@ while counter < length(c) + 1
         result(row_index, 1) = names(counter);
         row_index = row_index + 1;
         to_insert = struct_to_cells(current{1});
-        [rows, cols] = size(to_insert)
+        [rows, cols] = size(to_insert);
         result(row_index:(row_index + rows - 1), 2:(1 + cols)) = to_insert;
         row_index = row_index + rows;
     end
