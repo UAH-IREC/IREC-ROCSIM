@@ -85,6 +85,11 @@ Eng.pe = data.Pressure(3,1).Value; % Exit Pressure [Pa]
 Eng.Cfp = Eng.eps*((Eng.pe-pamb)/Eng.pct); % Pressure term thrust coefficient
 Eng.Cf = Eng.Cfvac + Eng.Cfp; % Actual thrust coefficient
 
+CEAinterp.pressures_psi = 30:200:1030;
+CEAinterp.pressures = CEAinterp.pressures_psi * psi2pa;
+CEAinterp.MRs = 6:2:10;
+CEAinterp.table = genCEAtable(CEAinterp.pressures, CEAinterp.MRs, Prop, Eng.eps, Tamb);
+
 % Assumed Rocket Parameters
 if ~isfield(Roc, 'Cd')
     warning('Drag coefficients not provided, using CdvsM_RASAERO.csv');
