@@ -8,7 +8,7 @@ function [max_vals, flightdata, forces, Roc, Eng, Prop] = runsim(Conditions, Pro
 %% Liquid Rocket Script with Simulink
 % Model LRSim1D
 %clc,clear
-startup % run startup script for CEA and Coolprop
+
 format shortG
 
 % Coolprop reference
