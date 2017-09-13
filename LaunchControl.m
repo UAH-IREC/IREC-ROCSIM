@@ -6,19 +6,18 @@ startup % run startup script for CEA and Coolprop
 %Changes temperature (K), pressure (Pa), MR, area ratio, and chamber
 %pressure (psi)
 
+%READ THESE IN FROM EXCEL LATER
+monte_carlo_iterations = 5;
+
 %% Simulation Conditions
 atm_conditions = [];
 atmoptions = readtable('simconfig.xlsx', 'Sheet', 'Simulation Conditions');
 
-[val, type] = param_from_table(atmoptions, 'Ambient pressure', 1);
-if type == ParameterType.SingleValue
-    atm_conditions.pamb = val;
-end
+atm_conditions.pamb = param_from_table(atmoptions, 'Ambient pressure', 1);
 
-[val, type] = param_from_table(atmoptions, 'Ambient temperature', 1);
-if type == ParameterType.SingleValue
-    atm_conditions.Tamb = val;
-end
+
+atm_conditions.Tamb = param_from_table(atmoptions, 'Ambient temperature', 1);
+
 
 %% Propellant Options
 prop_params = [];
@@ -37,85 +36,145 @@ for i = 1:height(propoptions)
     end
 end
 
-[val, type] = param_from_table(propoptions, 'Oxidizer volume', 1);
-if type == ParameterType.SingleValue
-    prop_params.ox.V = val;
-end
+prop_params.ox.V = param_from_table(propoptions, 'Oxidizer volume', 1);
 
-[val, type] = param_from_table(propoptions, 'Oxidizer mass', 1);
-if type == ParameterType.SingleValue
-    prop_params.ox.m = val;
-end
+prop_params.ox.m = param_from_table(propoptions, 'Oxidizer mass', 1);
 
 %% Rocket Options
 rocket_params = [];
 rocketoptions = readtable('simconfig.xlsx', 'Sheet', 'Rocket Parameters');
-[val, type] = param_from_table(rocketoptions, 'Total inert mass', 1);
-if type == ParameterType.SingleValue
-    rocket_params.minert = val;
-end
+rocket_params.minert = param_from_table(rocketoptions, 'Total inert mass', 1);
 
-[val, type] = param_from_table(rocketoptions, 'Largest circular diameter', 1);
-if type == ParameterType.SingleValue
-    rocket_params.d = val;
-end
+rocket_params.d = param_from_table(rocketoptions, 'Largest circular diameter', 1);
 
-[val, type] = param_from_table(rocketoptions, 'Thrust-to-weight ratio', 1);
-if type == ParameterType.SingleValue
-    rocket_params.TW = val;
-end
+rocket_params.TW = param_from_table(rocketoptions, 'Thrust-to-weight ratio', 1);
+
 
 %% Engine Options
 engine_params = [];
 engineoptions = readtable('simconfig.xlsx', 'Sheet', 'Engine Parameters');
-[val, type] = param_from_table(engineoptions, 'Chamber pressure', 1);
-if type == ParameterType.SingleValue
-    engine_params.pct_psi = val;
+engine_params.pct_psi = param_from_table(engineoptions, 'Chamber pressure', 1);
+
+engine_params.eps = param_from_table(engineoptions, 'Expansion ratio', 1);
+
+engine_params.cstar_eta = param_from_table(engineoptions, 'C*', 1);
+
+engine_params.m = param_from_table(engineoptions, 'Engine mass', 1);
+
+engine_params.epsc = param_from_table(engineoptions, 'Contraction ratio', 1);
+
+engine_params.Lstar = param_from_table(engineoptions, 'Characteristic length', 1);
+
+engine_params.MR = param_from_table(engineoptions, 'Mixture ratio', 1);
+
+engine_params.thetac = param_from_table(engineoptions, 'Chamber-to-throat contraction angle', 1);
+
+engine_params.alpn = param_from_table(engineoptions, 'Nozzle cone half angle', 1);
+
+
+%% Mode Detection
+
+% 1 is single
+% 2 is monte carlo
+% 3 is range
+mode = 1;
+
+fields = fieldnames(atm_conditions);
+for i = 1:numel(fields)
+    if ( mode ~= 1 && length(atm_conditions.(fields{i})) ~= 1 && mode ~= length(atm_conditions.(fields{i})) )
+        error('You cannot have Monte Carlo and Range in the same sim run');
+    elseif ( mode == 1 )
+        mode = length(atm_conditions.(fields{i}));
+    end
 end
 
-[val, type] = param_from_table(engineoptions, 'Expansion ratio', 1);
-if type == ParameterType.SingleValue
-    engine_params.eps = val;
+fields = fieldnames(engine_params);
+for i = 1:numel(fields)
+    if ( mode ~= 1 && length(engine_params.(fields{i})) ~= 1 && mode ~= length(engine_params.(fields{i})) )
+        error('You cannot have Monte Carlo and Range in the same sim run');
+    elseif ( mode == 1 )
+        mode = length(engine_params.(fields{i}));
+    end
 end
 
-[val, type] = param_from_table(engineoptions, 'C*', 1);
-if type == ParameterType.SingleValue
-    engine_params.cstar_eta = val;
+%Kinda hacky but whatever. I'd change this later
+if ( mode ~= 1 && length(prop_params.ox.V) ~= 1 & mode ~= length(prop_params.ox.V) )
+    error('You cannot have Monte Carlo and Range in the same sim run');
+elseif ( mode == 1 )
+    mode = length(prop_params.ox.V);
 end
 
-[val, type] = param_from_table(engineoptions, 'Engine mass', 1);
-if type == ParameterType.SingleValue
-    engine_params.m = val;
+
+fields = fieldnames(rocket_params);
+for i = 1:numel(fields)
+    if ( mode ~= 1 && length(rocket_params.(fields{i})) ~= 1 & mode ~= length(rocket_params.(fields{i})) )
+        error('You cannot have Monte Carlo and Range in the same sim run');
+    elseif ( mode == 1 )
+        mode = length(rocket_params.(fields{i}));
+    end
 end
 
-[val, type] = param_from_table(engineoptions, 'Contraction ratio', 1);
-if type == ParameterType.SingleValue
-    engine_params.epsc = val;
-end
-
-[val, type] = param_from_table(engineoptions, 'Characteristic length', 1);
-if type == ParameterType.SingleValue
-    engine_params.Lstar = val;
-end
-
-[val, type] = param_from_table(engineoptions, 'Mixture ratio', 1);
-if type == ParameterType.SingleValue
-    engine_params.MR = val;
-end
-
-[val, type] = param_from_table(engineoptions, 'Chamber-to-throat contraction angle', 1);
-if type == ParameterType.SingleValue
-    engine_params.thetac = val;
-end
-
-[val, type] = param_from_table(engineoptions, 'Nozzle cone half angle', 1);
-if type == ParameterType.SingleValue
-    engine_params.alpn = val;
-end
 
 %% Simulation Execution
+results = [];
+startup % run startup script for CEA and Coolprop
+if (mode == 1)
+    [max, flightdata, forces, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
+elseif (mode == 2)
+    for run = 1:monte_carlo_iterations
+        
+        this_run_atm_conditions = [];
+        this_run_prop_params = [];
+        this_run_engine_params = [];
+        this_run_rocket_params = [];
+        
+        fields = fieldnames(atm_conditions);
+        for i = 1:numel(fields)
+            if ( length(atm_conditions.(fields{i})) == 1)
+                this_run_atm_conditions.(fields{i}) = atm_conditions.(fields{i});
+            elseif ( length(atm_conditions.(fields{i})) == 2)
+                this_run_atm_conditions.(fields{i}) = normrnd(atm_conditions.(fields{i})(1),atm_conditions.(fields{i})(2));
+            end
+        end
 
-[max, flightdata, forces, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
+        fields = fieldnames(engine_params);
+        for i = 1:numel(fields)
+            if ( length(engine_params.(fields{i})) == 1)
+                this_run_engine_params.(fields{i}) = engine_params.(fields{i});
+            elseif ( length(engine_params.(fields{i})) == 2)
+                this_run_engine_params.(fields{i}) = normrnd(engine_params.(fields{i})(1),engine_params.(fields{i})(2));
+            end
+        end
+
+        %Kinda hacky but whatever. I'd change this later
+        this_run_prop_params.ox.name = prop_params.ox.name;
+        this_run_prop_params.f.name = prop_params.f.name;
+        
+        if ( length(prop_params.ox.V) == 1)
+            this_run_prop_params.ox.V = prop_params.ox.V;
+        elseif ( length(prop_params.ox.V) == 2)
+            this_run_prop_params.ox.V = normrnd(prop_params.ox.V(1),prop_params.ox.V(2));
+        end
+        
+
+
+        fields = fieldnames(rocket_params);
+        for i = 1:numel(fields)
+            if ( length(rocket_params.(fields{i})) == 1)
+                this_run_rocket_params.(fields{i}) = rocket_params.(fields{i});
+            elseif ( length(rocket_params.(fields{i})) == 2)
+                this_run_rocket_params.(fields{i}) = normrnd(rocket_params.(fields{i})(1),rocket_params.(fields{i})(2));
+            end
+        end
+        
+        [max, flightdata, forces, Roc, Eng, Prop] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params)
+        %%TODO: Output this somewhere besides the command window
+        %results(run) = [max, flightdata, forces, Roc, Eng, Prop]
+        
+    end
+elseif (mode == 3)
+    error('Range of values is not yet implemented');
+end
 
 %% Output
 
