@@ -11,7 +11,7 @@ monte_carlo_iterations = 5;
 
 %% Simulation Conditions
 atm_conditions = [];
-atmoptions = readtable('simconfig.xlsx', 'Sheet', 'Simulation Conditions');
+atmoptions = readtable('simconfig.xlsx', 'Sheet', 'Simulation Conditions (Weather)');
 
 atm_conditions.pamb = param_from_table(atmoptions, 'Ambient pressure', 1);
 
@@ -23,7 +23,7 @@ atm_conditions.Tamb = param_from_table(atmoptions, 'Ambient temperature', 1);
 prop_params = [];
 % prop_params.ox.garbage = 0;
 % prop_params.f.garbage = 0;
-propoptions = readtable('simconfig.xlsx', 'Sheet', 'Propellant Parameters');
+propoptions = readtable('simconfig.xlsx', 'Sheet', 'Propellant Parameters (Tanks)');
 for i = 1:height(propoptions)
     if strcmp(table2cell(propoptions(i, 1)), 'Oxidizer')
         name = table2cell(propoptions(i, 2));
@@ -38,11 +38,14 @@ end
 
 prop_params.ox.V = param_from_table(propoptions, 'Oxidizer volume', 1);
 
-prop_params.ox.m = param_from_table(propoptions, 'Oxidizer mass', 1);
+prop_params.ox.m = param_from_table(propoptions, 'Oxidizer Mass', 1);
 
+prop_params.ox.V = param_from_table(propoptions, 'Fuel volume', 1);
+
+prop_params.ox.m = param_from_table(propoptions, 'Fuel Mass', 1);
 %% Rocket Options
 rocket_params = [];
-rocketoptions = readtable('simconfig.xlsx', 'Sheet', 'Rocket Parameters');
+rocketoptions = readtable('simconfig.xlsx', 'Sheet', 'Rocket Parameters (Mass)');
 rocket_params.minert = param_from_table(rocketoptions, 'Total inert mass', 1);
 
 rocket_params.d = param_from_table(rocketoptions, 'Largest circular diameter', 1);
