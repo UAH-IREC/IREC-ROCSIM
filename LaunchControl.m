@@ -99,7 +99,7 @@ elseif (mode == 2)
         
         [max, flightdata, forces, Roc, Eng, Prop] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
         
-        results(runNum,:) = [max.alt, max.mach, max.accel, max.Q, max.load, max.thrust];
+        results(runNum,:) = [max.alt, max.mach, max.accel, max.Q, max.load, max.thrust, this_run_rocket_params.minert, (Prop.m)/(Prop.m+this_run_rocket_params.minert)];
         
     end
 elseif (mode == 3)
@@ -155,22 +155,31 @@ if (mode == 1)
     Excel.Quit();
     
 elseif (mode == 2)
-    subplot(2,3,1);
-    hist(results(:,1)./1000);
+    results = sortrows(results);
+    
+    subplot(3,3,1);
+    plot([1:monte_carlo_iterations],results(:,1)./1000);
     title('Altitude');
-    subplot(2,3,2);
-    hist(results(:,2));
+    subplot(3,3,2);
+    plot([1:monte_carlo_iterations],results(:,2));
     title('Mach Number');
-    subplot(2,3,3);
-    hist(results(:,3));
+    subplot(3,3,3);
+    plot([1:monte_carlo_iterations],results(:,3));
     title('Acceleration');
-    subplot(2,3,4);
-    hist(results(:,4));
+    subplot(3,3,4);
+    plot([1:monte_carlo_iterations],results(:,4));
     title('Q');
-    subplot(2,3,5);
-    hist(results(:,5));
+    subplot(3,3,5);
+    plot([1:monte_carlo_iterations],results(:,5));
     title('Load');
-    subplot(2,3,6);
-    hist(results(:,6));
+    subplot(3,3,6);
+    plot([1:monte_carlo_iterations],results(:,6));
     title('Thrust');
+    subplot(3,3,7);
+    plot([1:monte_carlo_iterations],results(:,7));
+    title('Dry Mass');
+    subplot(3,3,8);
+    plot([1:monte_carlo_iterations],results(:,8));
+    title('Mass Fraction');
+    
 end
