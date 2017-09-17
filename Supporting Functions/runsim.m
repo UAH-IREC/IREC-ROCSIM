@@ -234,6 +234,7 @@ tic % Record sim computation time
     Flight.max.accel = max(flightdata(:,2))/g; % [g]
     Flight.max.Q = max(forces(:,2))*0.2248; % Drag force[lb]
     Flight.max.load = max(forces(:,2)+forces(:,3))*0.2248; % Compressive load [lb]
+    Flight.max.thrust = max(forces(:,3))*0.2248; % Thrust force[lb]
     max_vals = Flight.max;
 
 toc

@@ -99,7 +99,7 @@ elseif (mode == 2)
         
         [max, flightdata, forces, Roc, Eng, Prop] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
         
-        results(runNum) = max.alt;
+        results(runNum,:) = [max.alt, max.mach, max.accel, max.Q, max.load, max.thrust];
         
     end
 elseif (mode == 3)
@@ -155,5 +155,22 @@ if (mode == 1)
     Excel.Quit();
     
 elseif (mode == 2)
-    hist(results);
+    subplot(2,3,1);
+    hist(results(:,1)./1000);
+    title('Altitude');
+    subplot(2,3,2);
+    hist(results(:,2));
+    title('Mach Number');
+    subplot(2,3,3);
+    hist(results(:,3));
+    title('Acceleration');
+    subplot(2,3,4);
+    hist(results(:,4));
+    title('Q');
+    subplot(2,3,5);
+    hist(results(:,5));
+    title('Load');
+    subplot(2,3,6);
+    hist(results(:,6));
+    title('Thrust');
 end
