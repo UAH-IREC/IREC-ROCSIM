@@ -38,11 +38,13 @@ end
 
 prop_params.ox.V = param_from_table(propoptions, 'Oxidizer volume', 1);
 
-prop_params.ox.m = param_from_table(propoptions, 'Oxidizer Mass', 1);
+prop_params.ox.m = param_from_table(propoptions, 'Ox Mass', 1);
 
-prop_params.ox.V = param_from_table(propoptions, 'Fuel volume', 1);
+prop_params.f.V = param_from_table(propoptions, 'Fuel volume', 1);
 
-prop_params.ox.m = param_from_table(propoptions, 'Fuel Mass', 1);
+prop_params.f.m = param_from_table(propoptions, 'Fuel Mass', 1);
+
+
 %% Rocket Options
 rocket_params = [];
 rocketoptions = readtable('simconfig.xlsx', 'Sheet', 'Rocket Parameters (Mass)');
@@ -51,7 +53,6 @@ rocket_params.minert = param_from_table(rocketoptions, 'Total inert mass', 1);
 rocket_params.d = param_from_table(rocketoptions, 'Largest circular diameter', 1);
 
 rocket_params.TW = param_from_table(rocketoptions, 'Thrust-to-weight ratio', 1);
-
 
 %% Engine Options
 engine_params = [];
@@ -84,6 +85,11 @@ mode = 1;
 
 fields = fieldnames(atm_conditions);
 for i = 1:numel(fields)
+    
+     if(length(atm_conditions.(fields{i})) == 0)
+        error('The value for the field "%s" in atmosphere paremeters is empty. Check if the parameter name is in the first column in Excel\nAKA Someone broke the Excel file', fields{i});
+    end
+    
     if ( mode ~= 1 && length(atm_conditions.(fields{i})) ~= 1 && mode ~= length(atm_conditions.(fields{i})) )
         error('You cannot have Monte Carlo and Range in the same sim run');
     elseif ( mode == 1 )
@@ -93,6 +99,11 @@ end
 
 fields = fieldnames(engine_params);
 for i = 1:numel(fields)
+    
+    if(length(engine_params.(fields{i})) == 0)
+        error('The value for the field "%s" in engine paremeters is empty. Check if the parameter name is in the first column in Excel\nAKA Someone broke the Excel file', fields{i});
+    end
+    
     if ( mode ~= 1 && length(engine_params.(fields{i})) ~= 1 && mode ~= length(engine_params.(fields{i})) )
         error('You cannot have Monte Carlo and Range in the same sim run');
     elseif ( mode == 1 )
@@ -100,16 +111,38 @@ for i = 1:numel(fields)
     end
 end
 
-%Kinda hacky but whatever. I'd change this later
-if ( mode ~= 1 && length(prop_params.ox.V) ~= 1 & mode ~= length(prop_params.ox.V) )
-    error('You cannot have Monte Carlo and Range in the same sim run');
-elseif ( mode == 1 )
-    mode = length(prop_params.ox.V);
+fields = fieldnames(prop_params);
+for i = 1:numel(fields)
+    
+    fields2 = fieldnames(prop_params.(fields{i}));
+    
+    for j = 1:numel(fields2)
+        
+        if(fields2{j} == 'name')
+            %Don't ask why this has to be done this way, I don't know but
+            %it doesn't work otherwise
+        else
+            if(length(prop_params.(fields{i}).(fields2{j})) == 0)
+                error('The value for the field "%s.%s" in prop paremeters is empty. Check if the parameter name is in the first column in Excel\nAKA Someone broke the Excel file', fields{i},fields2{j});
+            end
+            
+            if ( mode ~= 1 && length(prop_params.(fields{i}).(fields2{j})) ~= 1 && mode ~= length(prop_params.(fields{i}).(fields2{j})) )
+                error('You cannot have Monte Carlo and Range in the same sim run');
+            elseif ( mode == 1 )
+                mode = length(prop_params.(fields{i}).(fields2{j}));
+            end
+        end
+        
+    end
 end
-
 
 fields = fieldnames(rocket_params);
 for i = 1:numel(fields)
+    
+    if(length(rocket_params.(fields{i})) == 0)
+        error('The value for the field "%s" in rocket paremeters is empty. Check if the parameter name is in the first column in Excel\nAKA Someone broke the Excel file', fields{i});
+    end
+    
     if ( mode ~= 1 && length(rocket_params.(fields{i})) ~= 1 & mode ~= length(rocket_params.(fields{i})) )
         error('You cannot have Monte Carlo and Range in the same sim run');
     elseif ( mode == 1 )
@@ -117,13 +150,20 @@ for i = 1:numel(fields)
     end
 end
 
+if(mode > 3 || mode < 1)
+    error('error in detecting single value/monte carlo/range of values');
+end
 
 %% Simulation Execution
 results = [];
+
+
+
 startup % run startup script for CEA and Coolprop
 if (mode == 1)
     [max, flightdata, forces, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
 elseif (mode == 2)
+    error('Monte Carlo isn''t quite ready yet. Check back later!');
     for run = 1:monte_carlo_iterations
         
         this_run_atm_conditions = [];
@@ -159,6 +199,25 @@ elseif (mode == 2)
             this_run_prop_params.ox.V = normrnd(prop_params.ox.V(1),prop_params.ox.V(2));
         end
         
+        fields = fieldnames(prop_params);
+        for i = 1:numel(fields)
+            
+            fields2 = fieldnames(prop_params.(fields{i}));
+            
+            for j = 1:numel(fields2)
+                
+                
+                if(fields2{j} == 'name')
+                     this_run_prop_params.(fields{i}).(fields2{j}) = prop_params.(fields{i}).(fields2{j});
+                else
+                    if ( length(prop_params.(fields{i}).(fields2{j})) == 1)
+                        this_run_prop_params.(fields{i}).(fields2{j}) = prop_params.(fields{i}).(fields2{j});
+                    elseif ( length(prop_params.(fields{i}).(fields2{j})) == 2)
+                        this_run_prop_params.(fields{i}).(fields2{j}) = normrnd(prop_params.(fields{i}).(fields2{j})(1),prop_params.(fields{i}).(fields2{j})(2));
+                    end
+                end
+            end
+        end
 
 
         fields = fieldnames(rocket_params);
@@ -172,7 +231,7 @@ elseif (mode == 2)
         
         [max, flightdata, forces, Roc, Eng, Prop] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params)
         %%TODO: Output this somewhere besides the command window
-        %results(run) = [max, flightdata, forces, Roc, Eng, Prop]
+        %results(run,:) = [max, flightdata, forces, Roc, Eng, Prop]
         
     end
 elseif (mode == 3)
