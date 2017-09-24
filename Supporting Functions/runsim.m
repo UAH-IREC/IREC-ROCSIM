@@ -85,6 +85,8 @@ Eng.pe = data.Pressure(3,1).Value; % Exit Pressure [Pa]
 Eng.Cfp = Eng.eps*((Eng.pe-pamb)/Eng.pct); % Pressure term thrust coefficient
 Eng.Cf = Eng.Cfvac + Eng.Cfp; % Actual thrust coefficient
 
+[CEAinterp.pressures, CEAinterp.MRs, CEAinterp.eps, CEAinterp.temp_ox, CEAinterp.temp_f, CEAinterp.table] = load_CEA_table();
+
 % Assumed Rocket Parameters
 if ~isfield(Roc, 'Cd')
     warning('Drag coefficients not provided, using CdvsM_RASAERO.csv');
@@ -127,6 +129,40 @@ Roc.tank.Vf = Prop.f.V*(1+Vull); % [m^3]
 Prop.m = Prop.ox.m + Prop.f.m; % total propellant mass [kg]
 Roc.tank.Vox_in3 = Roc.tank.Vox/(1.63871*10^-5); % [in^3]
 Roc.tank.Vf_in3 = Roc.tank.Vf/(1.63871*10^-5); % [in^3]
+
+%% Propellant initial internal energies
+% Oxidizer
+Vtank = Roc.tank.Vox; 
+Vl = Vtank*(1-Vull);
+Vv = Vtank*Vull;
+T = Conditions.Tamb;
+rhol = CoolProp.PropsSI('D', 'T', T, 'Q', 0, 'NITROUSOXIDE');
+rhov = CoolProp.PropsSI('D', 'T', T, 'Q', 1, 'NITROUSOXIDE');
+ml = rhol*Vl;
+mv = rhov*Vv;
+mtot = ml+mv;
+qual = @(x) mtot*((1-x)/rhol + x/rhov)-Vtank;
+X = fzero(qual,0.5); % Beginning quality of the tank
+Prop.ox.U_initial = (X*(CoolProp.PropsSI('U', 'T', T, 'Q', 1, 'NITROUSOXIDE')-...
+    CoolProp.PropsSI('U', 'T', T, 'Q', 0, 'NITROUSOXIDE'))+...
+    CoolProp.PropsSI('U', 'T', T, 'Q', 0, 'NITROUSOXIDE'))*mtot;
+
+% Fuel
+Vtank = Roc.tank.Vf; 
+Vl = Vtank*(1-Vull);
+Vv = Vtank*Vull;
+T = Conditions.Tamb;
+rhol = CoolProp.PropsSI('D', 'T', T, 'Q', 0, 'ETHANE');
+rhov = CoolProp.PropsSI('D', 'T', T, 'Q', 1, 'ETHANE');
+ml = rhol*Vl;
+mv = rhov*Vv;
+mtot = ml+mv;
+qual = @(x) mtot*((1-x)/rhol + x/rhov)-Vtank;
+X = fzero(qual,0.5); % Beginning quality of the tank
+Prop.f.U_initial = (X*(CoolProp.PropsSI('U', 'T', T, 'Q', 1, 'ETHANE')-...
+    CoolProp.PropsSI('U', 'T', T, 'Q', 0, 'ETHANE'))+...
+    CoolProp.PropsSI('U', 'T', T, 'Q', 0, 'ETHANE'))*mtot;
+
 
 % Find mass of each tank
 % Metal Tanks
