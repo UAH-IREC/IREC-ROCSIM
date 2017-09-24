@@ -49,6 +49,7 @@ prop_params.f.m = param_from_table(propoptions, 'Fuel Mass', 1);
 prop_params.f.Cv_valves = param_from_table(propoptions, 'Fuel Valve Cv', 1);
 
 
+
 %% Rocket Options
 rocket_params = [];
 rocketoptions = readtable('simconfig.xlsx', 'Sheet', 'Rocket Parameters (Mass)');
@@ -92,7 +93,7 @@ engine_params.injector_ox_Cd = param_from_table(engineoptions, 'Oxidizer Injecto
 % 1 is single
 % 2 is monte carlo
 % 3 is range
-mode = detect_value_types(atm_conditions, prop_params, engine_params, rocket_params);
+mode = detect_value_types(atm_conditions, prop_params, engine_params, rocket_params)
 
 %% Simulation Execution
 results = [];

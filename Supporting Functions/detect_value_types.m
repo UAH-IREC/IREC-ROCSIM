@@ -38,8 +38,7 @@ for i = 1:numel(fields)
     fields2 = fieldnames(prop_params.(fields{i}));
     
     for j = 1:numel(fields2)
-        
-        if(fields2{j} == 'name')
+        if( strcmp(fields2{j},'name'))
             %Don't ask why this has to be done this way, I don't know but
             %it doesn't work otherwise
         else

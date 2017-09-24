@@ -32,8 +32,7 @@ for i = 1:numel(fields)
     
     for j = 1:numel(fields2)
         
-        
-        if(fields2{j} == 'name')
+        if(strcmp(fields2{j},'name'))
             this_run_prop_params.(fields{i}).(fields2{j}) = prop_params.(fields{i}).(fields2{j});
         else
             if ( length(prop_params.(fields{i}).(fields2{j})) == 1)
