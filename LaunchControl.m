@@ -40,9 +40,13 @@ prop_params.ox.V = param_from_table(propoptions, 'Oxidizer volume', 1);
 
 prop_params.ox.m = param_from_table(propoptions, 'Ox Mass', 1);
 
+prop_params.ox.Cv_valves = param_from_table(propoptions, 'Oxidizer Valve Cv', 1);
+
 prop_params.f.V = param_from_table(propoptions, 'Fuel volume', 1);
 
 prop_params.f.m = param_from_table(propoptions, 'Fuel Mass', 1);
+
+prop_params.f.Cv_valves = param_from_table(propoptions, 'Fuel Valve Cv', 1);
 
 
 %% Rocket Options
@@ -75,6 +79,13 @@ engine_params.thetac = param_from_table(engineoptions, 'Chamber-to-throat contra
 
 engine_params.alpn = param_from_table(engineoptions, 'Nozzle cone half angle', 1);
 
+engine_params.injector_f_Atotal = param_from_table(engineoptions, 'Fuel Injector Area', 1);
+
+engine_params.injector_ox_Atotal = param_from_table(engineoptions, 'Oxidizer Injector Area', 1);
+
+engine_params.injector_f_Cd = param_from_table(engineoptions, 'Fuel Injector Cd', 1);
+
+engine_params.injector_ox_Cd = param_from_table(engineoptions, 'Oxidizer Injector Cd', 1);
 
 %% Mode Detection
 
