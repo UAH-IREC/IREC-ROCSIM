@@ -47,6 +47,16 @@ if type == ParameterType.SingleValue
     prop_params.ox.m = val;
 end
 
+[val, type] = param_from_table(propoptions, 'Oxidizer Valve Cv', 1);
+if type == ParameterType.SingleValue
+    prop_params.ox.Cv_valves = val;
+end
+
+[val, type] = param_from_table(propoptions, 'Fuel Valve Cv', 1);
+if type == ParameterType.SingleValue
+    prop_params.f.Cv_valves = val;
+end
+
 %% Rocket Options
 rocket_params = [];
 rocketoptions = readtable('simconfig.xlsx', 'Sheet', 'Rocket Parameters');
@@ -76,6 +86,26 @@ end
 [val, type] = param_from_table(engineoptions, 'Expansion ratio', 1);
 if type == ParameterType.SingleValue
     engine_params.eps = val;
+end
+
+[val, type] = param_from_table(engineoptions, 'Fuel Injector Area', 1);
+if type == ParameterType.SingleValue
+    engine_params.injector.f.Atotal = val;
+end
+
+[val, type] = param_from_table(engineoptions, 'Oxidizer Injector Area', 1);
+if type == ParameterType.SingleValue
+    engine_params.injector.ox.Atotal = val;
+end
+
+[val, type] = param_from_table(engineoptions, 'Oxidizer Injector Cd', 1);
+if type == ParameterType.SingleValue
+    engine_params.injector.ox.Cd = val;
+end
+
+[val, type] = param_from_table(engineoptions, 'Fuel Injector Cd', 1);
+if type == ParameterType.SingleValue
+    engine_params.injector.f.Atotal = val;
 end
 
 [val, type] = param_from_table(engineoptions, 'C*', 1);
