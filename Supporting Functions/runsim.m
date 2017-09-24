@@ -50,12 +50,12 @@ if ~isfield(Eng, 'MR')
     Eng.MR = 8;
 end
 
-Prop.ox.p = CoolProp.PropsSI('P', 'T', Tamb, 'Q', 0, char(Prop.ox.name(1))); % [Pa]
+Prop.ox.p = CoolProp.PropsSI('P', 'T', Prop.ox.T, 'Q', 0, char(Prop.ox.name(1))); % [Pa]
 Prop.ox.p_psi = Prop.ox.p/psi2pa; % [psi]
-Prop.f.p = CoolProp.PropsSI('P', 'T', Tamb, 'Q', 0, char(Prop.f.name(1))); % [Pa]
+Prop.f.p = CoolProp.PropsSI('P', 'T', Prop.f.T, 'Q', 0, char(Prop.f.name(1))); % [Pa]
 Prop.f.p_psi = Prop.f.p/psi2pa; % [psi]
-Prop.ox.rho = CoolProp.PropsSI('D', 'T', Tamb, 'Q', 0, char(Prop.ox.name(1))); % [kg/m^3]
-Prop.f.rho = CoolProp.PropsSI('D', 'T', Tamb, 'Q', 0, char(Prop.f.name(1))); % [kg/m^3]
+Prop.ox.rho = CoolProp.PropsSI('D', 'T', Prop.ox.T, 'Q', 0, char(Prop.ox.name(1))); % [kg/m^3]
+Prop.f.rho = CoolProp.PropsSI('D', 'T', Prop.f.T, 'Q', 0, char(Prop.f.name(1))); % [kg/m^3]
 
 % Assumed Engine Performance Values
 
