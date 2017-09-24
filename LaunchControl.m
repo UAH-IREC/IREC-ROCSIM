@@ -42,13 +42,15 @@ prop_params.ox.m = param_from_table(propoptions, 'Ox Mass', 1);
 
 prop_params.ox.Cv_valves = param_from_table(propoptions, 'Oxidizer Valve Cv', 1);
 
+prop_params.ox.T = param_from_table(propoptions, 'Oxidizer temperature', 1);
+
 prop_params.f.V = param_from_table(propoptions, 'Fuel volume', 1);
 
 prop_params.f.m = param_from_table(propoptions, 'Fuel Mass', 1);
 
 prop_params.f.Cv_valves = param_from_table(propoptions, 'Fuel Valve Cv', 1);
 
-
+prop_params.f.T = param_from_table(propoptions, 'Fuel temperature', 1);
 
 %% Rocket Options
 rocket_params = [];
@@ -93,7 +95,7 @@ engine_params.injector_ox_Cd = param_from_table(engineoptions, 'Oxidizer Injecto
 % 1 is single
 % 2 is monte carlo
 % 3 is range
-mode = detect_value_types(atm_conditions, prop_params, engine_params, rocket_params)
+mode = detect_value_types(atm_conditions, prop_params, engine_params, rocket_params);
 
 %% Simulation Execution
 results = [];
