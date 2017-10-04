@@ -25,6 +25,7 @@ for n1 = 1:length(pressures)
                                                 data.Pressure(3,1).Value];
                     count = count + 1;
                     fprintf('Progress: %i/%i\n', count, total);
+                    fclose('all');
                 end
             end
         end
