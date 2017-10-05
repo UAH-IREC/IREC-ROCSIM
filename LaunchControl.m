@@ -18,6 +18,8 @@ atm_conditions.pamb = param_from_table(atmoptions, 'Ambient pressure', 1);
 
 atm_conditions.Tamb = param_from_table(atmoptions, 'Ambient temperature', 1);
 
+atm_conditions.launchaltitude = param_from_table(atmoptions, 'Launch Altitude', 1);
+
 
 %% Propellant Options
 prop_params = [];
@@ -68,7 +70,7 @@ engine_params.pct_psi = param_from_table(engineoptions, 'Chamber pressure', 1);
 
 engine_params.eps = param_from_table(engineoptions, 'Expansion ratio', 1);
 
-engine_params.cstar_eta = param_from_table(engineoptions, 'C*', 1);
+engine_params.cstar_eta = param_from_table(engineoptions, 'C* efficiency', 1);
 
 engine_params.m = param_from_table(engineoptions, 'Engine mass', 1);
 
@@ -79,6 +81,8 @@ engine_params.Lstar = param_from_table(engineoptions, 'Characteristic length', 1
 engine_params.MR = param_from_table(engineoptions, 'Mixture ratio', 1);
 
 engine_params.thetac = param_from_table(engineoptions, 'Chamber-to-throat contraction angle', 1);
+
+engine_params.At = param_from_table(engineoptions, 'Engine throat area', 1);
 
 engine_params.alpn = param_from_table(engineoptions, 'Nozzle cone half angle', 1);
 
