@@ -107,7 +107,7 @@ results = [];
 
 startup % run startup script for CEA and Coolprop
 if (mode == 1)
-    [max, flightdata, forces, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
+    [max, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
 elseif (mode == 2)
     %error('Monte Carlo isn''t quite ready yet. Check back later!');
     for runNum = 1:monte_carlo_iterations
@@ -156,8 +156,15 @@ if (mode == 1)
     Excel.Range(sprintf('F2:H%i', rows)).Select();
     Excel.Selection.Value = num2cell(forces);
     
+    Excel.Range('I1:N1').Select();
+    Excel.Selection.Value = {'Remaining Oxidizer Mass (kg)', 'Oxidizer Tank Quality', 'Remaining Fuel Mass (kg)',...
+        'Fuel Tank Quality', 'Chamber Pressure (Pa)', 'Mixture Ratio'};
+    [rows, ~] = size(propinfo);
+    Excel.Range(sprintf('I2:N%i', rows)).Select();
+    Excel.Selection.Value = num2cell(propinfo);
+    
     % Insert results
-    begin_col = 11;
+    begin_col = 18;
     [~, plusc] = insert_struct_into_excel(max, 'Maximums', Excel, [1, begin_col]);
     begin_col = begin_col + plusc + 2;
     [~, plusc] = insert_struct_into_excel(Prop, 'Propellants', Excel, [1, begin_col]);
