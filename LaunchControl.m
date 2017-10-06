@@ -156,15 +156,16 @@ if (mode == 1)
     Excel.Range(sprintf('F2:H%i', rows)).Select();
     Excel.Selection.Value = num2cell(forces);
     
-    Excel.Range('I1:N1').Select();
+    Excel.Range('I1:S1').Select();
     Excel.Selection.Value = {'Remaining Oxidizer Mass (kg)', 'Oxidizer Tank Quality', 'Remaining Fuel Mass (kg)',...
-        'Fuel Tank Quality', 'Chamber Pressure (Pa)', 'Mixture Ratio'};
+        'Fuel Tank Quality', 'Chamber Pressure (Pa)', 'Mixture Ratio', 'Specific Impulse (s)',...
+        'Thrust Coefficient', 'Vacuum Thrust Coefficient', 'Exit Pressure', 'Ambient Pressure'};
     [rows, ~] = size(propinfo);
-    Excel.Range(sprintf('I2:N%i', rows)).Select();
+    Excel.Range(sprintf('I2:S%i', rows)).Select();
     Excel.Selection.Value = num2cell(propinfo);
     
     % Insert results
-    begin_col = 18;
+    begin_col = 21;
     [~, plusc] = insert_struct_into_excel(max, 'Maximums', Excel, [1, begin_col]);
     begin_col = begin_col + plusc + 2;
     [~, plusc] = insert_struct_into_excel(Prop, 'Propellants', Excel, [1, begin_col]);
