@@ -1,4 +1,4 @@
-function [max_vals, flightdata, forces, Roc, Eng, Prop] = runsim(Conditions, Prop, Eng, Roc)
+function [max_vals, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(Conditions, Prop, Eng, Roc)
 %RUNSIM Summary of this function goes here
 %   Tamb:               ambient temperature (K)
 %   Pamb:               ambient pressure (Pa)
@@ -144,6 +144,7 @@ tic % Record sim computation time
     Flight.max.load = max(forces(:,2)+forces(:,3))*0.2248; % Compressive load [lb]
     Flight.max.thrust = max(forces(:,3))*0.2248; % Thrust force[lb]
     Flight.max.impulse = max(flightdata(:, 6)); % [N*s]
+    Flight.max.Isp = Flight.max.impulse / ((max(forces(:, 1)) - min(forces(:, 1))) * g);
     max_vals = Flight.max;
 
 toc
