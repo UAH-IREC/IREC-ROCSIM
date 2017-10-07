@@ -1,6 +1,6 @@
 tic
 psi2pa = 6894.76; % convert psi to Pa
-eps = 3.5:.25:4.5;
+eps = 3.75:.25:5.0;
 MRs = 6:.05:10;
 temp_f = [265, 285, 305];
 temp_ox = [269, 289, 309];
