@@ -7,7 +7,6 @@ startup % run startup script for CEA and Coolprop
 %pressure (psi)
 
 %READ THESE IN FROM EXCEL LATER
-monte_carlo_iterations = 50;
 
 %% Simulation Conditions
 atm_conditions = [];
@@ -20,6 +19,7 @@ atm_conditions.Tamb = param_from_table(atmoptions, 'Ambient temperature', 1);
 
 atm_conditions.launchaltitude = param_from_table(atmoptions, 'Launch Altitude', 1);
 
+monte_carlo_iterations = param_from_table(atmoptions, '# of Monte Carlo runs', 1);
 
 %% Propellant Options
 prop_params = [];
