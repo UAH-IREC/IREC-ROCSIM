@@ -66,7 +66,6 @@ rocket_params.TW = param_from_table(rocketoptions, 'Thrust-to-weight ratio', 1);
 %% Engine Options
 engine_params = [];
 engineoptions = readtable('simconfig.xlsx', 'Sheet', 'Engine Parameters');
-engine_params.pct_psi = param_from_table(engineoptions, 'Chamber pressure', 1);
 
 engine_params.eps = param_from_table(engineoptions, 'Expansion ratio', 1);
 
@@ -131,7 +130,42 @@ elseif (mode == 2)
         
     end
 elseif (mode == 3)
-    error('Range of values is not yet implemented');
+    % Return [2, 5, 10] if the first parameter has 2 values, the next
+    % has 5, and the 3rd has 10. Preserving order is obviously rather
+    % important here
+    dimensions = get_sim_dimensions(atm_conditions, prop_params, engine_params, rocket_params);
+    sim_inputs = cell([1, dimensions]); % Well that was easy
+    % Populate every case initially
+    for i = 1:numel(sim_inputs)
+        sim_inputs(i) = {{atm_conditions, prop_params, engine_params, rocket_params}};
+    end
+    
+    % Now go through and vary things
+    for i = 1:length(dimensions) % Vary things one dimension at a time
+        % Some kind of changeparameter function? Like change the nth
+        % parameter
+        for j = 1:dimensions(i) % Loop through once for each unique value
+            if i == 1
+                pos = j;
+            else
+                pos = prod(dimensions(1:i-1)) + j;
+            end
+            current_sim = sim_inputs(pos);
+            current_sim = current_sim{:};
+            [a, b, c, d] = changeparameter(i, j, current_sim{1}, current_sim{2}, current_sim{3}, current_sim{4});
+            sim_inputs(pos) = {{a, b, c, d}};
+        end
+    end
+    
+    sim_outputs = cell([1, dimensions]); % Well that was easy
+    for i = 1:numel(sim_inputs)
+        this_run = sim_inputs(i);
+        [atm_conditions, prop_params, engine_params, rocket_params] = this_run{1}{:};
+        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
+        sim_outputs(i) = {{keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop}};
+    end
+    
+    %error('Range of values is not yet implemented');
 end
 
 
@@ -244,31 +278,7 @@ elseif (mode == 2)
     
     results = sortrows(results);
     
-%     subplot(3,3,1);
-%     % Apogee
-%     plot(1:monte_carlo_iterations,results(:,1));
-%     title('Altitude');
-%     subplot(3,3,2);
-%     plot([1:monte_carlo_iterations],results(:,2));
-%     title('Mach Number');
-%     subplot(3,3,3);
-%     plot([1:monte_carlo_iterations],results(:,3));
-%     title('Acceleration');
-%     subplot(3,3,4);
-%     plot([1:monte_carlo_iterations],results(:,4));
-%     title('Q');
-%     subplot(3,3,5);
-%     plot([1:monte_carlo_iterations],results(:,5));
-%     title('Load');
-%     subplot(3,3,6);
-%     plot([1:monte_carlo_iterations],results(:,6));
-%     title('Thrust');
-%     subplot(3,3,7);
-%     plot([1:monte_carlo_iterations],results(:,7));
-%     title('Dry Mass');
-%     subplot(3,3,8);
-%     plot([1:monte_carlo_iterations],results(:,8));
-%     title('Mass Fraction');
+elseif mode == 3
     
 end
 
