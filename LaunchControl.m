@@ -21,6 +21,10 @@ atm_conditions.launchaltitude = param_from_table(atmoptions, 'Launch Altitude', 
 
 monte_carlo_iterations = param_from_table(atmoptions, '# of Monte Carlo runs', 1);
 
+atm_conditions.rail_length = param_from_table(atmoptions, 'Rail length (effective)', 1);
+
+atm_conditions.launch_angle = deg2rad(param_from_table(atmoptions, 'Launch angle', 1));
+
 %% Propellant Options
 prop_params = [];
 % prop_params.ox.garbage = 0;
