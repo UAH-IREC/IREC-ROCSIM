@@ -16,16 +16,17 @@ Excel.Selection.Value = {'Mass (kg)', 'Drag (N)', 'Thrust (N)'};
 Excel.Range(sprintf('L2:N%i', rows)).Select();
 Excel.Selection.Value = num2cell(forces);
 
-Excel.Range('O1:Y1').Select();
+Excel.Range('O1:AA1').Select();
 Excel.Selection.Value = {'Remaining Oxidizer Mass (kg)', 'Oxidizer Tank Quality', 'Remaining Fuel Mass (kg)',...
     'Fuel Tank Quality', 'Chamber Pressure (Pa)', 'Mixture Ratio', 'Specific Impulse (s)',...
-    'Thrust Coefficient', 'Vacuum Thrust Coefficient', 'Exit Pressure', 'Ambient Pressure'};
+    'Thrust Coefficient', 'Vacuum Thrust Coefficient', 'Exit Pressure',...
+    'Ambient Pressure', 'Ox Tank Pressure (Pa)', 'Fuel Tank Pressure (Pa)'};
 [rows, ~] = size(propinfo);
-Excel.Range(sprintf('O2:Y%i', rows)).Select();
+Excel.Range(sprintf('O2:AA%i', rows)).Select();
 Excel.Selection.Value = num2cell(propinfo);
 
 % Insert results
-begin_col = 28;
+begin_col = 30;
 [~, plusc] = insert_struct_into_excel(max, 'Maximums', Excel, [1, begin_col]);
 begin_col = begin_col + plusc + 2;
 [~, plusc] = insert_struct_into_excel(Prop, 'Propellants', Excel, [1, begin_col]);
