@@ -14,7 +14,6 @@ atmoptions = readtable('simconfig.xlsx', 'Sheet', 'Simulation Conditions (Weathe
 
 atm_conditions.pamb = param_from_table(atmoptions, 'Ambient pressure', 1);
 
-
 atm_conditions.Tamb = param_from_table(atmoptions, 'Ambient temperature', 1);
 
 atm_conditions.launchaltitude = param_from_table(atmoptions, 'Launch Altitude', 1);
@@ -112,7 +111,7 @@ startup % run startup script for CEA and Coolprop
 if (mode == 1)
     [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
 elseif (mode == 2)
-    %error('Monte Carlo isn''t quite ready yet. Check back later!');
+    
     fieldrecord = cell([monte_carlo_iterations, 1]);
     fullsims = cell([monte_carlo_iterations, 1]);
     for runNum = 1:monte_carlo_iterations
@@ -131,45 +130,57 @@ elseif (mode == 2)
         data.propinfo = propinfo;
         fullsims{runNum} = data;
         results(runNum,:) = [keyinfo.alt, keyinfo.mach, keyinfo.accel, keyinfo.Q, keyinfo.load, keyinfo.thrust, this_run_rocket_params.minert, (Prop.m)/(Prop.m+this_run_rocket_params.minert)];
-        
     end
 elseif (mode == 3)
     % Return [2, 5, 10] if the first parameter has 2 values, the next
     % has 5, and the 3rd has 10. Preserving order is obviously rather
     % important here
     dimensions = get_sim_dimensions(atm_conditions, prop_params, engine_params, rocket_params);
-    sim_inputs = cell([1, dimensions]); % Well that was easy
-    % Populate every case initially
-    for i = 1:numel(sim_inputs)
-        sim_inputs(i) = {{atm_conditions, prop_params, engine_params, rocket_params}};
-    end
+    dimensions = dimensions + 1;
     
-    % Now go through and vary things
-    for i = 1:length(dimensions) % Vary things one dimension at a time
-        % Some kind of changeparameter function? Like change the nth
-        % parameter
-        for j = 1:dimensions(i) % Loop through once for each unique value
-            if i == 1
-                pos = j;
-            else
-                pos = prod(dimensions(1:i-1)) + j;
-            end
-            current_sim = sim_inputs(pos);
-            current_sim = current_sim{:};
-            [a, b, c, d] = changeparameter(i, j, current_sim{1}, current_sim{2}, current_sim{3}, current_sim{4});
-            sim_inputs(pos) = {{a, b, c, d}};
+    for i = 1:numel(dimensions)
+        if(dimensions(i) <= 1)
+            error('The %s range of values parameter has one or fewer items. Decrease the step size for the parameter.',num2ordinal(i));
         end
     end
     
-    sim_outputs = cell([1, dimensions]); % Well that was easy
-    for i = 1:numel(sim_inputs)
-        this_run = sim_inputs(i);
-        [atm_conditions, prop_params, engine_params, rocket_params] = this_run{1}{:};
-        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
-        sim_outputs(i) = {{keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop}};
+    input_counts = ones([1,length(dimensions)]);
+    
+    input_counts(end) = 0;
+    
+    fieldrecord = cell([prod(dimensions), 1]);
+    fullsims = cell([prod(dimensions), 1]);
+    
+    for i = 1:prod(dimensions)
+        input_counts(end) = input_counts(end) + 1;
+        for j = numel(input_counts):-1:2
+            if (input_counts(j) > dimensions(j))
+                input_counts(j) = 1;
+                input_counts(j-1) = input_counts(j-1) + 1;
+            end
+        end
+        
+        input_coefficients = (input_counts-1) ./ (dimensions-1)
+        
+        fprintf('\nOn iteration %.0f of %.0f', i, prod(dimensions));
+        
+        [this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params, varied_fields] = generate_range_of_values_parameters(atm_conditions, prop_params, engine_params, rocket_params, input_coefficients);
+        
+        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
+        fieldrecord(i) = {varied_fields};
+        data.flightdata = flightdata;
+        data.keyinfo = keyinfo;
+        data.forces = forces;
+        data.Roc = Roc;
+        data.Eng = Eng;
+        data.Prop = Prop;
+        data.propinfo = propinfo;
+        fullsims{i} = data;
+        results(i,:) = [keyinfo.alt, keyinfo.mach, keyinfo.accel, keyinfo.Q, keyinfo.load, keyinfo.thrust, this_run_rocket_params.minert, (Prop.m)/(Prop.m+this_run_rocket_params.minert)];
+        
     end
     
-    %error('Range of values is not yet implemented');
+    
 end
 
 
@@ -201,7 +212,13 @@ if (mode == 1)
     WB.Sheets.Item(WS.Count).Activate();
     sim_output_gen(Excel, flightdata, forces, propinfo, keyinfo, Prop, Eng, Roc);
     
-elseif (mode == 2)
+elseif (mode == 2 || mode == 3)
+    if(mode == 2)
+        iteration_count = monte_carlo_iterations;
+    else
+        iteration_count = prod(dimensions);
+    end
+    
     WS.Add([], WS.Item(WS.Count));
     WS.Item(WS.Count).Name = 'Summary';
     % Delete default sheets
@@ -211,8 +228,8 @@ elseif (mode == 2)
     WB.Sheets.Item(WS.Count).Activate();
     
     tablestart = 5;
-    Excel.Range(sprintf('A%i:A%i', tablestart + 2, monte_carlo_iterations + 6)).Select();
-    its = 1:monte_carlo_iterations;
+    Excel.Range(sprintf('A%i:A%i', tablestart + 2, iteration_count + 6)).Select();
+    its = 1:iteration_count;
     Excel.Selection.Value = its';
     
     % Insert input values
@@ -223,7 +240,7 @@ elseif (mode == 2)
         Excel.Selection.Value = 'Input';
         Excel.Range(sprintf('%s%i', alphabetnumbers(i + 1), tablestart + 1)).Select();
         Excel.Selection.Value = cur_record(i, 1);
-        for j = 1:monte_carlo_iterations
+        for j = 1:iteration_count
             Excel.Range(sprintf('%s%i', alphabetnumbers(i + 1), j + tablestart + 1)).Select();
             cur_record = fieldrecord{j};
             Excel.Selection.Value = cur_record(i, 2);
@@ -237,14 +254,14 @@ elseif (mode == 2)
     Excel.Selection.Value = output_headers;
     %Insert output values
     for j = 1:length(output_headers)
-        for i = 1:monte_carlo_iterations
+        for i = 1:iteration_count
             Excel.Range(sprintf('%s%i', alphabetnumbers(num_varied_parameters + 2 + j - 1), i + tablestart + 1)).Select();
             Excel.Selection.Value = results(i, j);
         end
     end
     
     apogees = results(:,1);
-    binstep = (max(apogees) - min(apogees)) / (monte_carlo_iterations / 3);
+    binstep = (max(apogees) - min(apogees)) / (iteration_count / 3);
     bins = (min(apogees) * 0.99):binstep:(max(apogees) * 1.01);
     [counts] = histc(apogees, bins);
     % Each entry in counts is the number of values between the
@@ -269,7 +286,7 @@ elseif (mode == 2)
         tablestart + length(bins) - 1)).Select();
     Excel.Selection.Value = counts;
     
-    for i = 1:monte_carlo_iterations
+    for i = 1:iteration_count
         WS.Add([], WS.Item(WS.Count));
         WS.Item(WS.Count).Name = sprintf('Run #%i', i);
         WB.Sheets.Item(WS.Count).Activate();

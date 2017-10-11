@@ -45,5 +45,7 @@ for i = 1:numel(fields)
         dim = [dim (param(3) - param(1))/param(2)];
     end
 end
+
+dim = round(dim);
 end
 
