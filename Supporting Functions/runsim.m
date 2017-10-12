@@ -123,7 +123,7 @@ if ~isfield(Eng, 'alpn')
 end
 Eng.Ln_in = ((Eng.de_in-Eng.dt_in)/2) / tand(Eng.alpn); % Cone nozzle length [in]
 
-Roc.A = pi * Roc.d^2;
+Roc.A = pi * Roc.d^2 / 4;
 
 %% Simulation Section
 options = simset('SrcWorkspace','current');
@@ -150,4 +150,3 @@ tic % Record sim computation time
 toc
 
 end
-
