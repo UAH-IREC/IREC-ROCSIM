@@ -147,7 +147,7 @@ elseif (mode == 2)
         
         [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
         
-        exec_times(runNum) = exec_time * 1.01666667;
+        exec_times(runNum) = exec_time * 1.125; % Multiply by 1.125 so the time estimate is conservative and we don't end up trying to make a graph out of the data in 7 minutes before a poster is due when we thought we'd have an hour
         
         fieldrecord(runNum) = {varied_fields};
         data.flightdata = flightdata;
@@ -224,7 +224,7 @@ elseif (mode == 3)
         
         [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
         
-        exec_times(i) = exec_time * 1.01666667;
+        exec_times(i) = exec_time * 1.125;
         
         fieldrecord(i) = {varied_fields};
         data.flightdata = flightdata;
