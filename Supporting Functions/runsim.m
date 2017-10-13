@@ -1,4 +1,4 @@
-function [max_vals, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(Conditions, Prop, Eng, Roc)
+function [max_vals, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(Conditions, Prop, Eng, Roc)
 %RUNSIM Summary of this function goes here
 %   Tamb:               ambient temperature (K)
 %   Pamb:               ambient pressure (Pa)
@@ -88,8 +88,8 @@ Prop.f.U_initial = (X*(CoolProp.PropsSI('U', 'T', T, 'Q', 1, 'ETHANE')-...
 % Wet Mass and More Derived Performance
 Roc.mwet = Prop.m + Roc.minert; % Wet mass of rocket [kg]
 Roc.Mprop = Prop.m/Roc.mwet; % Propellant mass ratio
-Eng.thrustGL = (Roc.mwet*g)*Roc.TW; % Thrust on ground level [N]
-Eng.thrustGL_lb = Eng.thrustGL / lb2N; % [lbf]
+% Eng.thrustGL = (Roc.mwet*g)*Roc.TW; % Thrust on ground level [N]
+% Eng.thrustGL_lb = Eng.thrustGL / lb2N; % [lbf]
 Eng.dt = (Eng.At/(pi/4))^0.5; % Initial throat diameter [m]
 Eng.dt_in = Eng.dt / in2m; % [in]
 Eng.Ae = Eng.eps*Eng.At; % Exit area [m^2]
@@ -147,6 +147,6 @@ tic % Record sim computation time
     Flight.max.Isp = Flight.max.impulse / ((max(forces(:, 1)) - min(forces(:, 1))) * g);
     max_vals = Flight.max;
 
-toc
+exec_time = toc;
 
 end

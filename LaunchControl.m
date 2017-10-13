@@ -8,6 +8,8 @@ startup % run startup script for CEA and Coolprop
 
 %READ THESE IN FROM EXCEL LATER
 
+warning('off','all')
+
 %% Simulation Conditions
 atm_conditions = [];
 atmoptions = readtable('simconfig.xlsx', 'Sheet', 'Simulation Conditions (Weather)');
@@ -64,7 +66,7 @@ rocket_params.minert = param_from_table(rocketoptions, 'Total inert mass', 1);
 
 rocket_params.d = param_from_table(rocketoptions, 'Largest circular diameter', 1);
 
-rocket_params.TW = param_from_table(rocketoptions, 'Thrust-to-weight ratio', 1);
+%rocket_params.TW = param_from_table(rocketoptions, 'Thrust-to-weight ratio', 1);
 
 %% Engine Options
 engine_params = [];
@@ -80,7 +82,7 @@ engine_params.epsc = param_from_table(engineoptions, 'Contraction ratio', 1);
 
 engine_params.Lstar = param_from_table(engineoptions, 'Characteristic length', 1);
 
-engine_params.MR = param_from_table(engineoptions, 'Mixture ratio', 1);
+%engine_params.MR = param_from_table(engineoptions, 'Mixture ratio', 1);
 
 engine_params.thetac = param_from_table(engineoptions, 'Chamber-to-throat contraction angle', 1);
 
@@ -114,12 +116,39 @@ elseif (mode == 2)
     
     fieldrecord = cell([monte_carlo_iterations, 1]);
     fullsims = cell([monte_carlo_iterations, 1]);
+    
+    exec_times = [0];
     for runNum = 1:monte_carlo_iterations
-        fprintf('\nOn iteration %.0f of %.0f', runNum, monte_carlo_iterations);
+        fprintf('\n\nOn iteration %.0f of %.0f  ( %.1f%% )', runNum, monte_carlo_iterations, runNum/monte_carlo_iterations*100);
+        
+        iterations_remaining = monte_carlo_iterations - runNum;
+        time_remaining = iterations_remaining * mean(exec_times);
+        
+        
+        curr_time = clock;
+        curr_hr = curr_time(4); curr_min = curr_time(5); curr_s = curr_time(6);
+        
+        finish_hr = floor(curr_hr + time_remaining / (60.0 * 60.0));
+        finish_min = floor(curr_min + mod(time_remaining / 60.0,60));
+        finish_s = floor(curr_s +  mod(time_remaining,60));
+        
+        finish_min = finish_min + finish_s/60;
+        finish_hr = finish_hr + finish_min/60;
+        
+        finish_s = floor(mod(finish_s,60));
+        finish_min = floor(mod(finish_min,60));
+        finish_hr = floor(mod(finish_hr,24));
+        
+        fprintf('\nEstimated Time Remaining: %4.0f : %02.0f : %02.0f', floor(time_remaining / (60.0 * 60.0)), floor(mod(time_remaining / 60.0,60)), floor(mod(time_remaining,60)));
+        fprintf('\nApproximate Time Elapsed: %4.0f : %02.0f : %02.0f', floor(sum(exec_times) / (60.0 * 60.0)), floor(mod(sum(exec_times) / 60.0,60)), floor(mod(sum(exec_times),60)));
+        fprintf('\nExtrapolated Finish Time: %4.0f : %02.0f : %02.0f', finish_hr, finish_min, finish_s);
         
         [this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params, varied_fields] = generate_monte_carlo_parameters(atm_conditions, prop_params, engine_params, rocket_params);
         
-        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
+        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
+        
+        exec_times(runNum) = exec_time * 1.01666667;
+        
         fieldrecord(runNum) = {varied_fields};
         data.flightdata = flightdata;
         data.keyinfo = keyinfo;
@@ -138,6 +167,9 @@ elseif (mode == 3)
     dimensions = get_sim_dimensions(atm_conditions, prop_params, engine_params, rocket_params);
     dimensions = dimensions + 1;
     
+    fprintf('\nDimension Sizes:');
+    disp(dimensions);
+    
     for i = 1:numel(dimensions)
         if(dimensions(i) <= 1)
             error('The %s range of values parameter has one or fewer items. Decrease the step size for the parameter.',num2ordinal(i));
@@ -151,6 +183,8 @@ elseif (mode == 3)
     fieldrecord = cell([prod(dimensions), 1]);
     fullsims = cell([prod(dimensions), 1]);
     
+    exec_times = [0];
+    
     for i = 1:prod(dimensions)
         input_counts(end) = input_counts(end) + 1;
         for j = numel(input_counts):-1:2
@@ -160,13 +194,38 @@ elseif (mode == 3)
             end
         end
         
-        input_coefficients = (input_counts-1) ./ (dimensions-1)
+        input_coefficients = (input_counts-1) ./ (dimensions-1);
         
-        fprintf('\nOn iteration %.0f of %.0f', i, prod(dimensions));
+        fprintf('\n\nOn iteration %.0f of %.0f  ( %.1f%% )', i, prod(dimensions), i/prod(dimensions)*100);
+        
+        iterations_remaining = prod(dimensions) - i;
+        time_remaining = iterations_remaining * mean(exec_times);
+        
+        
+        curr_time = clock;
+        curr_hr = curr_time(4); curr_min = curr_time(5); curr_s = curr_time(6);
+        
+        finish_hr = floor(curr_hr + time_remaining / (60.0 * 60.0));
+        finish_min = floor(curr_min + mod(time_remaining / 60.0,60));
+        finish_s = floor(curr_s +  mod(time_remaining,60));
+        
+        finish_min = finish_min + finish_s/60;
+        finish_hr = finish_hr + finish_min/60;
+        
+        finish_s = floor(mod(finish_s,60));
+        finish_min = floor(mod(finish_min,60));
+        finish_hr = floor(mod(finish_hr,24));
+        
+        fprintf('\nEstimated Time Remaining: %4.0f : %02.0f : %02.0f', floor(time_remaining / (60.0 * 60.0)), floor(mod(time_remaining / 60.0,60)), floor(mod(time_remaining,60)));
+        fprintf('\nApproximate Time Elapsed: %4.0f : %02.0f : %02.0f', floor(sum(exec_times) / (60.0 * 60.0)), floor(mod(sum(exec_times) / 60.0,60)), floor(mod(sum(exec_times),60)));
+        fprintf('\nExtrapolated Finish Time: %4.0f : %02.0f : %02.0f', finish_hr, finish_min, finish_s);
         
         [this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params, varied_fields] = generate_range_of_values_parameters(atm_conditions, prop_params, engine_params, rocket_params, input_coefficients);
         
-        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
+        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
+        
+        exec_times(i) = exec_time * 1.01666667;
+        
         fieldrecord(i) = {varied_fields};
         data.flightdata = flightdata;
         data.keyinfo = keyinfo;
@@ -269,7 +328,7 @@ elseif (mode == 2 || mode == 3)
     % means that the last entry in counts will always be zero
     counts = counts(1:end-1);
     
-    % Output into Excel will contain the average bin value instead of the 
+    % Output into Excel will contain the average bin value instead of the
     % endpoints of the bin, for easier plotting. Bin size is readily
     % calculated from the spacing between two bins
     % https://www.mathworks.com/matlabcentral/answers/89845-how-do-i-create-a-vector-of-the-average-of-consecutive-elements-of-another-vector-without-using-a-l#answer_99279
