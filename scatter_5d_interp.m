@@ -4,6 +4,7 @@ ret = [0 0 0 0];
 x1 = sample(1);
 data_4d = Y(1, :, :, :, :, :); data_3d = []; data_2d = []; data_1d = [];
 if x1 < min(X1) || x1 > max(X1)
+    fprintf('Attempting to get properties at a chamber pressure of %f. Minimum is %f, maximum is %f\n', x1, min(X1), max(X1));
     warning('1st dimension sample point outside interpolation range');
 end
 for n = 1:(length(X1) - 1)
@@ -15,6 +16,7 @@ end
 
 x2 = sample(2);
 if x2 < min(X2) || x2 > max(X2)
+    fprintf('Attempting to get properties at a mixture ratio of %f. Minimum is %f, maximum is %f\n', x2, min(X2), max(X2));
     warning('2nd dimension sample point outside interpolation range');
 end
 for n = 1:(length(X2) - 1)
@@ -26,6 +28,7 @@ end
 
 x3 = sample(3);
 if x3 < min(X3) || x3 > max(X3)
+    fprintf('Attempting to get properties at an expansion ratio of %f. Minimum is %f, maximum is %f\n', x3, min(X3), max(X3));
     warning('3rd dimension sample point outside interpolation range');
 end
 for n = 1:(length(X3) - 1)
@@ -37,6 +40,7 @@ end
 
 x4 = sample(4);
 if x4 < min(X4) || x4 > max(X4)
+    fprintf('Attempting to get properties at an oxidizer temperature of %f. Minimum is %f, maximum is %f\n', x4, min(X4), max(X4));
     warning('4th dimension sample point outside interpolation range');
 end
 for n = 1:(length(X4) - 1)
@@ -48,6 +52,7 @@ end
 
 x5 = sample(5);
 if x5 < min(X5) || x5 > max(X5)
+    fprintf('Attempting to get properties at a fuel temperature of %f. Minimum is %f, maximum is %f\n', x5, min(X5), max(X5));
     warning('5th dimension sample point outside interpolation range');
 end
 for n = 1:(length(X5) - 1)
