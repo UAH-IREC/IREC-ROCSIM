@@ -34,7 +34,7 @@ Prop.f.rho = CoolProp.PropsSI('D', 'T', Prop.f.T, 'Q', 0, char(Prop.f.name(1)));
 
 Roc.Cd = csvread('CdvsM_RASAERO.csv')'; % Courtesy Aaron Hunt
 
-Vull = 0.15; % Assumed Tank Ullage %
+Vull = 0; % Assumed Tank Ullage %
 
 Prop.ox.m = Prop.ox.V*Prop.ox.rho; % [kg]
 
