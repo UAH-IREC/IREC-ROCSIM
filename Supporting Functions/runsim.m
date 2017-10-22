@@ -1,4 +1,4 @@
-function [max_vals, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(Conditions, Prop, Eng, Roc)
+function [max_vals, flightdata, forces, propinfo, INS_data, Roc, Eng, Prop, exec_time] = runsim(Conditions, Prop, Eng, Roc)
 %RUNSIM Summary of this function goes here
 %   Tamb:               ambient temperature (K)
 %   Pamb:               ambient pressure (Pa)

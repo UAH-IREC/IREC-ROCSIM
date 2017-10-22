@@ -111,7 +111,7 @@ results = [];
 
 startup % run startup script for CEA and Coolprop
 if (mode == 1)
-    [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
+    [keyinfo, flightdata, forces, propinfo, INS_data, Roc, Eng, Prop] = runsim(atm_conditions, prop_params, engine_params, rocket_params);
 elseif (mode == 2)
     
     fieldrecord = cell([monte_carlo_iterations, 1]);
@@ -145,7 +145,7 @@ elseif (mode == 2)
         
         [this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params, varied_fields] = generate_monte_carlo_parameters(atm_conditions, prop_params, engine_params, rocket_params);
         
-        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
+        [keyinfo, flightdata, forces, propinfo, INS_data, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
         
         exec_times(runNum) = exec_time * 1.125; % Multiply by 1.125 so the time estimate is conservative and we don't end up trying to make a graph out of the data in 7 minutes before a poster is due when we thought we'd have an hour
         
@@ -222,7 +222,7 @@ elseif (mode == 3)
         
         [this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params, varied_fields] = generate_range_of_values_parameters(atm_conditions, prop_params, engine_params, rocket_params, input_coefficients);
         
-        [keyinfo, flightdata, forces, propinfo, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
+        [keyinfo, flightdata, forces, propinfo, INS_data, Roc, Eng, Prop, exec_time] = runsim(this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params);
         
         exec_times(i) = exec_time * 1.125;
         
@@ -234,6 +234,7 @@ elseif (mode == 3)
         data.Eng = Eng;
         data.Prop = Prop;
         data.propinfo = propinfo;
+        data.INS_data = INS_data;
         fullsims{i} = data;
         results(i,:) = [keyinfo.alt, keyinfo.mach, keyinfo.accel, keyinfo.Q, keyinfo.load, keyinfo.thrust, this_run_rocket_params.minert, (Prop.m)/(Prop.m+this_run_rocket_params.minert)];
         
@@ -269,7 +270,7 @@ if (mode == 1)
     
     % https://stackoverflow.com/questions/7636567/write-information-into-excel-after-each-loop
     WB.Sheets.Item(WS.Count).Activate();
-    sim_output_gen(Excel, flightdata, forces, propinfo, keyinfo, Prop, Eng, Roc);
+    sim_output_gen(Excel, flightdata, forces, propinfo, INS_data, keyinfo, Prop, Eng, Roc);
     
 elseif (mode == 2 || mode == 3)
     if(mode == 2)
@@ -352,8 +353,8 @@ elseif (mode == 2 || mode == 3)
         this_sim = fullsims(i);
         this_sim = this_sim{:};
         sim_output_gen(Excel, this_sim.flightdata, this_sim.forces,...
-            this_sim.propinfo, this_sim.keyinfo, this_sim.Prop,...
-            this_sim.Eng, this_sim.Roc);
+            this_sim.propinfo, this_sim.INS_data, this_sim.keyinfo,...
+            this_sim.Prop, this_sim.Eng, this_sim.Roc);
     end
     
     results = sortrows(results);
