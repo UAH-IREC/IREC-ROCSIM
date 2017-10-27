@@ -2,3 +2,4 @@
 slprj/
 *.mexw64
 *~$*
+*.autosave

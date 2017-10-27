@@ -243,6 +243,8 @@ elseif (mode == 3)
     
 end
 
+fprintf('\n\nDone Simulating!\n\n');
+
 
 %% Output
 
