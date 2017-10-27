@@ -32,7 +32,7 @@ Excel.Range(sprintf('AC2:AG%i', rows)).Select();
 Excel.Selection.Value = num2cell(INS_data);
 
 % Insert results
-begin_col = 35;
+begin_col = 37;
 [~, plusc] = insert_struct_into_excel(max, 'Maximums', Excel, [1, begin_col]);
 begin_col = begin_col + plusc + 2;
 [~, plusc] = insert_struct_into_excel(Prop, 'Propellants', Excel, [1, begin_col]);
