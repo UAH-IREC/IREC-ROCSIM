@@ -25,10 +25,10 @@ Excel.Selection.Value = {'Remaining Oxidizer Mass (kg)', 'Oxidizer Tank Quality'
 Excel.Range(sprintf('O2:AA%i', rows)).Select();
 Excel.Selection.Value = num2cell(propinfo);
 
-Excel.Range('AC1:AF1').Select();
-Excel.Selection.Value = {'Time (s)', 'Acceleration (m/s^2)', 'Velocity (m/s)', 'Altitude (m)'};
+Excel.Range('AC1:AG1').Select();
+Excel.Selection.Value = {'Time (s)', 'Acceleration (m/s^2)', 'Velocity (m/s)', 'Altitude (m)', 'Projected Apogee (m)'};
 [rows, ~] = size(INS_data);
-Excel.Range(sprintf('AC2:AF%i', rows)).Select();
+Excel.Range(sprintf('AC2:AG%i', rows)).Select();
 Excel.Selection.Value = num2cell(INS_data);
 
 % Insert results

@@ -8,7 +8,7 @@ startup % run startup script for CEA and Coolprop
 
 %READ THESE IN FROM EXCEL LATER
 
-warning('off','all')
+%warning('off','all')
 
 %% Simulation Conditions
 atm_conditions = [];
