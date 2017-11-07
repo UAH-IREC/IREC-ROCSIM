@@ -134,8 +134,9 @@ else
     tend = Conditions.tend;
 end
 
-
 tic % Record sim computation time
+    load_system('LR_Traject_Sim.slx');
+    set_param('LR_Traject_Sim/INS Modelling/Accelerometer Noise', 'Seed', num2str(floor(mod(now * 1000, 1) * 1000000)*100)); 
     simOut = sim('LR_Traject_Sim.slx', [], options);
     Flight.max.alt = max(flightdata(:,4))*m2f; % [ft]
     Flight.max.mach = max(flightdata(:,5)); % V/a
@@ -145,6 +146,8 @@ tic % Record sim computation time
     Flight.max.thrust = max(forces(:,3))*0.2248; % Thrust force[lb]
     Flight.max.impulse = max(flightdata(:, 6)); % [N*s]
     Flight.max.Isp = Flight.max.impulse / ((max(forces(:, 1)) - min(forces(:, 1))) * g);
+    temp = find(~flightdata(5:end, 3));
+    Flight.max.burnout_predicted_apogee = INS_data(115, 5)*m2f;
     max_vals = Flight.max;
 
 exec_time = toc;
