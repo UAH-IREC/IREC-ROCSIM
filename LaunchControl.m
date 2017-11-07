@@ -26,6 +26,8 @@ atm_conditions.rail_length = param_from_table(atmoptions, 'Rail length (effectiv
 
 atm_conditions.launch_angle = deg2rad(param_from_table(atmoptions, 'Launch angle', 1));
 
+atm_conditions.sensors_accel_noise = deg2rad(param_from_table(atmoptions, 'Accelerometer stddev', 1));
+
 %% Propellant Options
 prop_params = [];
 % prop_params.ox.garbage = 0;
@@ -157,6 +159,7 @@ elseif (mode == 2)
         data.Eng = Eng;
         data.Prop = Prop;
         data.propinfo = propinfo;
+        data.INS_data = INS_data;
         fullsims{runNum} = data;
         results(runNum,:) = [keyinfo.alt, keyinfo.mach, keyinfo.accel, keyinfo.Q, keyinfo.load, keyinfo.thrust, this_run_rocket_params.minert, (Prop.m)/(Prop.m+this_run_rocket_params.minert)];
     end
