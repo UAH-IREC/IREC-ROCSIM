@@ -26,7 +26,9 @@ atm_conditions.rail_length = param_from_table(atmoptions, 'Rail length (effectiv
 
 atm_conditions.launch_angle = deg2rad(param_from_table(atmoptions, 'Launch angle', 1));
 
-atm_conditions.sensors_accel_noise = deg2rad(param_from_table(atmoptions, 'Accelerometer stddev', 1));
+atm_conditions.sensors_accel_noise = param_from_table(atmoptions, 'Accelerometer stddev', 1);
+
+atm_conditions.sensors_pressure_total_stddev = param_from_table(atmoptions, 'Total pressure sensor stddev', 1);
 
 %% Propellant Options
 prop_params = [];
