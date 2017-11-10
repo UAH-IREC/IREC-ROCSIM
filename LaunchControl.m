@@ -49,6 +49,8 @@ end
 
 prop_params.ox.V = param_from_table(propoptions, 'Oxidizer volume', 1);
 
+prop_params.ox.V_ullage_initial = param_from_table(propoptions, 'Oxidizer ullage volume', 1);
+
 prop_params.ox.m = param_from_table(propoptions, 'Ox Mass', 1);
 
 prop_params.ox.Cv_valves = param_from_table(propoptions, 'Oxidizer Valve Cv', 1);
@@ -56,6 +58,8 @@ prop_params.ox.Cv_valves = param_from_table(propoptions, 'Oxidizer Valve Cv', 1)
 prop_params.ox.T = param_from_table(propoptions, 'Oxidizer temperature', 1);
 
 prop_params.f.V = param_from_table(propoptions, 'Fuel volume', 1);
+
+prop_params.f.V_ullage_initial = param_from_table(propoptions, 'Fuel ullage volume', 1);
 
 prop_params.f.m = param_from_table(propoptions, 'Fuel Mass', 1);
 
