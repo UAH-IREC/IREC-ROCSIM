@@ -1,7 +1,5 @@
-function [outputArg1,outputArg2] = N2O_d(inputArg1,inputArg2)
-%N2O_D Summary of this function goes here
-%   Detailed explanation goes here
-outputArg1 = inputArg1;
-outputArg2 = inputArg2;
+function density = N2O_d(press, temp)
+% Density of subcooled nitrous oxide
+
 end
 
