@@ -53,6 +53,14 @@ for n = 1:length(temps_sat)
     fprintf(msg);
     l = length(msg);
 end
-csvwrite('N2O_sat_l_table.csv', N2O_sat_l);
-csvwrite('N2O_sat_v_table.csv', N2O_sat_v);
+csvwrite('N2O_sat_l_P_table.csv', N2O_sat_l(:, 1));
+csvwrite('N2O_sat_l_u_table.csv', N2O_sat_l(:, 2));
+csvwrite('N2O_sat_l_h_table.csv', N2O_sat_l(:, 3));
+csvwrite('N2O_sat_l_d_table.csv', N2O_sat_l(:, 4));
+
+csvwrite('N2O_sat_v_P_table.csv', N2O_sat_v(:, 1));
+csvwrite('N2O_sat_v_u_table.csv', N2O_sat_v(:, 2));
+csvwrite('N2O_sat_v_h_table.csv', N2O_sat_v(:, 3));
+csvwrite('N2O_sat_v_d_table.csv', N2O_sat_v(:, 4));
+
 csvwrite('N2O_sat_temps.csv', temps_sat);

@@ -1,7 +1,5 @@
-function [outputArg1,outputArg2] = N2O_H(inputArg1,inputArg2)
-%N2O_H Summary of this function goes here
-%   Detailed explanation goes here
-outputArg1 = inputArg1;
-outputArg2 = inputArg2;
+function enthalpy = N2O_h(press, temp)
+% Enthalpy of subcooled nitrous oxide
+global N2O_subcooled_pres_range N2O_subcooled_temp_range N2O_h_table;
+enthalpy = interp2d(press, temp, N2O_subcooled_pres_range, N2O_subcooled_temp_range, N2O_h_table);
 end
-

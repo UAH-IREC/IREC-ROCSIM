@@ -2,6 +2,8 @@
 % Model LRSim1D
 clc,clear
 startup % run startup script for CEA and Coolprop
+
+
 %runsim() % Uses default parameters
 %Changes temperature (K), pressure (Pa), MR, area ratio, and chamber
 %pressure (psi)
@@ -66,6 +68,8 @@ prop_params.f.m = param_from_table(propoptions, 'Fuel Mass', 1);
 prop_params.f.Cv_valves = param_from_table(propoptions, 'Fuel Valve Cv', 1);
 
 prop_params.f.T = param_from_table(propoptions, 'Fuel temperature', 1);
+
+prop_params.f.filmcooling_divert = param_from_table(propoptions, 'Fuel Diverted to Film Cooling', 1);
 
 %% Rocket Options
 rocket_params = [];
