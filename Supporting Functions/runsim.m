@@ -14,8 +14,7 @@ format shortG
 global N2O_sat_v_P_table N2O_sat_v_u_table N2O_sat_v_h_table N2O_sat_v_d_table...
     N2O_sat_l_P_table N2O_sat_l_u_table N2O_sat_l_h_table N2O_sat_l_d_table N2O_sat_temprange;
 PureNitrous = Simulink.Variant('OxPressurizationMode==1');
-PureNitrousWhile = Simulink.Variant('OxPressurizationMode==3');
-Supercharged = Simulink.Variant('OxPressurizationMode==2');
+SuperchargedNitrous = Simulink.Variant('OxPressurizationMode==2');
 OxPressurizationMode = 1;
 % Coolprop reference
 % http://www.coolprop.org/coolprop/wrappers/MATLAB/index.html#matlab
