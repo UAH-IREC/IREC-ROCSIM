@@ -110,6 +110,8 @@ engine_params.injector_f_Cd = param_from_table(engineoptions, 'Fuel Injector Cd'
 
 engine_params.injector_ox_Cd = param_from_table(engineoptions, 'Oxidizer Injector Cd', 1);
 
+engine_params.ignition_time = param_from_table(engineoptions, 'Ignition Time', 1);
+
 %% Mode Detection
 
 % 1 is single
