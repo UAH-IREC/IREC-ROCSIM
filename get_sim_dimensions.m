@@ -1,4 +1,4 @@
-function dim = get_sim_dimensions(atm_conditions, prop_params, engine_params, rocket_params)
+function dim = get_sim_dimensions(atm_conditions, prop_params, engine_params, rocket_params, avionics_params)
 % Given a set of input parameters where n parameters are set to 'Range of 
 % Values', return the dimensions associated with an n-dimensional matrix
 % that holds every permutation of the simulation
@@ -42,6 +42,14 @@ fields = fieldnames(rocket_params);
 for i = 1:numel(fields)
     if ( length(rocket_params.(fields{i})) == 3)
         param = rocket_params.(fields{i});
+        dim = [dim (param(3) - param(1))/param(2)];
+    end
+end
+
+fields = fieldnames(avionics_params);
+for i = 1:numel(fields)
+    if ( length(avionics_params.(fields{i})) == 3)
+        param = avionics_params.(fields{i});
         dim = [dim (param(3) - param(1))/param(2)];
     end
 end

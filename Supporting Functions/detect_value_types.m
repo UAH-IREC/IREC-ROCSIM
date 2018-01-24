@@ -1,4 +1,4 @@
-function mode = detect_value_types(atm_conditions, prop_params, engine_params, rocket_params)
+function mode = detect_value_types(atm_conditions, prop_params, engine_params, rocket_params, avionics_params)
 %DETECT_VALUE_TYPES Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -67,6 +67,20 @@ for i = 1:numel(fields)
         error('You cannot have Monte Carlo and Range in the same sim run');
     elseif ( mode == 1 )
         mode = length(rocket_params.(fields{i}));
+    end
+end
+
+fields = fieldnames(avionics_params);
+for i = 1:numel(fields)
+    
+    if(length(avionics_params.(fields{i})) == 0)
+        error('The value for the field "%s" in avionics paremeters is empty. Check if the parameter name is in the first column in Excel\nAKA Someone broke the Excel file', fields{i});
+    end
+    
+    if ( mode ~= 1 && length(avionics_params.(fields{i})) ~= 1 & mode ~= length(avionics_params.(fields{i})) )
+        error('You cannot have Monte Carlo and Range in the same sim run');
+    elseif ( mode == 1 )
+        mode = length(avionics_params.(fields{i}));
     end
 end
 

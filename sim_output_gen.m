@@ -1,4 +1,4 @@
-function ret = sim_output_gen(Excel, flightdata, forces, propinfo, INS_data, max, Prop, Eng, Roc)
+function ret = sim_output_gen(Excel, flightdata, forces, propinfo, avionics_data, max, Prop, Eng, Roc)
 % Write the simulation and simulation input parameters described by
 % flightdata, forces, propinfo, max, Prop, Eng, and Roc into the current
 % active Excel sheet
@@ -25,14 +25,14 @@ Excel.Selection.Value = {'Remaining Oxidizer Mass (kg)', 'Oxidizer Tank Quality'
 Excel.Range(sprintf('O2:AA%i', rows)).Select();
 Excel.Selection.Value = num2cell(propinfo);
 
-Excel.Range('AC1:AG1').Select();
-Excel.Selection.Value = {'Time (s)', 'Acceleration (m/s^2)', 'Velocity (m/s)', 'Altitude (m)', 'Projected Apogee (m)'};
-[rows, ~] = size(INS_data);
-Excel.Range(sprintf('AC2:AG%i', rows)).Select();
-Excel.Selection.Value = num2cell(INS_data);
+Excel.Range('AC1:AL1').Select();
+Excel.Selection.Value = {'Time (s)', 'Acceleration (m/s^2)', 'Velocity (m/s)', 'Altitude (m)', 'Projected Apogee (m)', 'Distance', 'Elevation Angle', 'Rocket to GSE Angle', 'FSPL', 'Link Margin'};
+[rows, ~] = size(avionics_data);
+Excel.Range(sprintf('AC2:AL%i', rows)).Select();
+Excel.Selection.Value = num2cell(avionics_data);
 
 % Insert results
-begin_col = 37;
+begin_col = 40;
 [~, plusc] = insert_struct_into_excel(max, 'Maximums', Excel, [1, begin_col]);
 begin_col = begin_col + plusc + 2;
 [~, plusc] = insert_struct_into_excel(Prop, 'Propellants', Excel, [1, begin_col]);

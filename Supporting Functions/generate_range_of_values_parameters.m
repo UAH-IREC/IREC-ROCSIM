@@ -1,4 +1,4 @@
-function [ this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params, variedtable] = generate_range_of_values_parameters(atm_conditions, prop_params, engine_params, rocket_params, parameter_coefficients)
+function [ this_run_atm_conditions, this_run_prop_params, this_run_engine_params, this_run_rocket_params, this_run_avionics_params, variedtable] = generate_range_of_values_parameters(atm_conditions, prop_params, engine_params, rocket_params, avionics_params, parameter_coefficients)
 %GENERATE_RANGE_OF_VALUE_PARAMETERS Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -6,6 +6,7 @@ this_run_atm_conditions = [];
 this_run_prop_params = [];
 this_run_engine_params = [];
 this_run_rocket_params = [];
+this_run_avionics_params = [];
 
 parameter_index = 1;
 
@@ -64,6 +65,18 @@ for i = 1:numel(fields)
     elseif ( length(rocket_params.(fields{i})) == 3)
         this_run_rocket_params.(fields{i}) = interp1([0,1],[rocket_params.(fields{i})(1),rocket_params.(fields{i})(3)],parameter_coefficients(parameter_index));
         variedtable = [variedtable; [{fields{i}}, this_run_rocket_params.(fields{i})]];
+        
+        parameter_index = parameter_index+1;
+    end
+end
+
+fields = fieldnames(avionics_params);
+for i = 1:numel(fields)
+    if ( length(avionics_params.(fields{i})) == 1)
+        this_run_avionics_params.(fields{i}) = avionics_params.(fields{i});
+    elseif ( length(avionics_params.(fields{i})) == 3)
+        this_run_avionics_params.(fields{i}) = interp1([0,1],[avionics_params.(fields{i})(1),avionics_params.(fields{i})(3)],parameter_coefficients(parameter_index));
+        variedtable = [variedtable; [{fields{i}}, this_run_avionics_params.(fields{i})]];
         
         parameter_index = parameter_index+1;
     end
