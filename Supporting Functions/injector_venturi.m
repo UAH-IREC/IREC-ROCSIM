@@ -4,7 +4,7 @@ function [mdot, cav_flag] = injector_venturi(P2, P1, T1, Cd, A2)
 %   P2: Downstream pressure (Chamber) [Pa]
 %   P1: Upstream pressure [Pa]
 %   T1: Upstream temperature [K]
-%   Cd: Injector discharge pressure [unitless]
+%   Cd: Injector discharge coefficient [unitless]
 %   A2: Exit area of injector orifice (not throat) [m^2]
 % OUTPUT:
 %   mdot: Mass flow rate [kg]
@@ -12,9 +12,19 @@ function [mdot, cav_flag] = injector_venturi(P2, P1, T1, Cd, A2)
 
 % Constants
 psi2pa = 6894.76; % convert psi to Pa
-
+coder.extrinsic('CoolProp.PropsSI');
 %Pv = CoolProp.PropsSI('P', 'T', T1, 'Q', 0, 'NITROUSOXIDE'); % [Pa]
 %rho1l = CoolProp.PropsSI('D', 'T', T1, 'Q', 0, 'NITROUSOXIDE'); % [kg/m^3]
+h1 = 0;
+s1 = 0;
+rho2l = 0;
+rho2v = 0;
+h2l = 0;
+h2v = 0;
+h2 = 0;
+mdot = 0;
+cav_flag = 0;
+
 h1 = CoolProp.PropsSI('H', 'T', T1, 'P', P1, 'NITROUSOXIDE'); % [J/kg]
 s1 = CoolProp.PropsSI('S', 'T', T1, 'P', P1, 'NITROUSOXIDE'); % [J/kg/K]
 dP_in = P1 - P2;
@@ -24,7 +34,8 @@ mdot_old = 0;
 dp_list = (5:5:600) * psi2pa;
 for dP = dp_list
     i = i + 1;
-    P2 = P1-dP; % [Pa] 
+    P2 = double(P1-dP); % [Pa] 
+    s1 = double(s1);
     rho2l = CoolProp.PropsSI('D', 'P', P2, 'Q', 0, 'NITROUSOXIDE');
     rho2v = CoolProp.PropsSI('D', 'P', P2, 'Q', 1, 'NITROUSOXIDE');
     h2l = CoolProp.PropsSI('H', 'P', P2, 'Q', 0, 'NITROUSOXIDE');
